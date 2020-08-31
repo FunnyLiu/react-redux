@@ -1,5 +1,5 @@
 import verifyPlainObject from '../utils/verifyPlainObject'
-
+// props的merge方法
 export function defaultMergeProps(stateProps, dispatchProps, ownProps) {
   return { ...ownProps, ...stateProps, ...dispatchProps }
 }

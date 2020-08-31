@@ -1,5 +1,5 @@
 import verifySubselectors from './verifySubselectors'
-
+// 将各个props进行合并
 export function impureFinalPropsSelectorFactory(
   mapStateToProps,
   mapDispatchToProps,
@@ -96,11 +96,12 @@ export function pureFinalPropsSelectorFactory(
 // allowing connectAdvanced's shouldComponentUpdate to return false if final
 // props have not changed. If false, the selector will always return a new
 // object and shouldComponentUpdate will always return true.
-
+// 对外暴露的工厂函数
 export default function finalPropsSelectorFactory(
   dispatch,
   { initMapStateToProps, initMapDispatchToProps, initMergeProps, ...options }
 ) {
+  // 调用传入的mapStateToProps和mapDispatchToProps
   const mapStateToProps = initMapStateToProps(dispatch, options)
   const mapDispatchToProps = initMapDispatchToProps(dispatch, options)
   const mergeProps = initMergeProps(dispatch, options)

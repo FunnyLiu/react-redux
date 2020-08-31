@@ -149,7 +149,7 @@ function subscribeUpdates(
 }
 
 const initStateUpdates = () => [null, 0]
-
+// connect 方法真正调用的高阶组件
 export default function connectAdvanced(
   /*
     selectorFactory is a func that is responsible for returning the selector function used to
@@ -196,6 +196,7 @@ export default function connectAdvanced(
     forwardRef = false,
 
     // the context consumer to use
+    // 取到全局唯一的redux的context
     context = ReactReduxContext,
 
     // additional options are passed through to the selectorFactory
@@ -227,7 +228,7 @@ export default function connectAdvanced(
       )
     }
   }
-
+  // 拿到context
   const Context = context
 
   return function wrapWithConnect(WrappedComponent) {
@@ -242,7 +243,7 @@ export default function connectAdvanced(
           )}`
       )
     }
-
+    // connect 传递的组件名称
     const wrappedComponentName =
       WrappedComponent.displayName || WrappedComponent.name || 'Component'
 
@@ -270,7 +271,7 @@ export default function connectAdvanced(
     // To avoid conditionally calling hooks, we fall back to a tiny wrapper
     // that just executes the given callback immediately.
     const usePureOnlyMemo = pure ? useMemo : callback => callback()
-
+    // 这个就是connect后生成的新组件
     function ConnectFunction(props) {
       const [
         propsContext,
@@ -295,6 +296,7 @@ export default function connectAdvanced(
       }, [propsContext, Context])
 
       // Retrieve the store and ancestor subscription via context, if available
+      // 拿到contextValue
       const contextValue = useContext(ContextToUse)
 
       // The store _must_ exist as either a prop or in context.
@@ -457,6 +459,9 @@ export default function connectAdvanced(
           // If this component is subscribed to store updates, we need to pass its own
           // subscription instance down to our descendants. That means rendering the same
           // Context instance, and putting a different value into the context.
+          //
+          // 如果组件订阅了store的更新，我们需要把它的subscription传递给子级
+          // 也就是同样的context使用不同的值
           return (
             <ContextToUse.Provider value={overriddenContextValue}>
               {renderedWrappedComponent}
@@ -471,8 +476,9 @@ export default function connectAdvanced(
     }
 
     // If we're in "pure" mode, ensure our wrapper component only re-renders when incoming props have changed.
+    // 通过useMemo优化
     const Connect = pure ? React.memo(ConnectFunction) : ConnectFunction
-
+    // 其包裹组件为真正传入connect函数的组件
     Connect.WrappedComponent = WrappedComponent
     Connect.displayName = displayName
 
@@ -488,7 +494,7 @@ export default function connectAdvanced(
       forwarded.WrappedComponent = WrappedComponent
       return hoistStatics(forwarded, WrappedComponent)
     }
-
+    //通过hoist-non-react-statics将传入的组件WrappedComponent上的静态方法赋予到新组件Connect上
     return hoistStatics(Connect, WrappedComponent)
   }
 }
